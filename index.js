@@ -65,6 +65,8 @@ module.exports = {
       }
     });
 
+    me.routes = _.extend({}, this.routes, this.config.routes);
+
     return this;
   },
 
@@ -94,7 +96,7 @@ module.exports = {
           var path = _.sprintf('%s/%s.%s', app.get('views'), route, app.get('view engine'));
 
           if(fs.existsSync(path)) {
-            res.render(path);
+            res.render(_.sprintf('%s.%s', route, app.get('view engine')));
           } else {
             next();
           }
@@ -168,47 +170,47 @@ module.exports = {
     var routes = {};
     var path = file.slice(0, -13).toLowerCase();
 
-    if(_.has(controller, 'findAction')) {
+    if(_.has(controller, 'find')) {
       var routeName = _.sprintf('all /%s/find', path);
 
       routes[routeName] = {
         method      : 'all',
         pattern     : _.sprintf('/%s/find/:id?', path),
         controller  : file.slice(0, -3),
-        action      : 'findAction'
+        action      : 'find'
       }
     }
 
-    if(_.has(controller, 'createAction')) {
+    if(_.has(controller, 'create')) {
       var routeName = _.sprintf('all /%s/create', path);
 
       routes[routeName] = {
         method      : 'all',
         pattern     : _.sprintf('/%s/create', path),
         controller  : file.slice(0, -3),
-        action      : 'createAction'
+        action      : 'create'
       }
     }
 
-    if(_.has(controller, 'updateAction')) {
+    if(_.has(controller, 'update')) {
       var routeName = _.sprintf('all /%s/update', path);
 
       routes[routeName] = {
         method      : 'all',
         pattern     : _.sprintf('/%s/update/:id', path),
         controller  : file.slice(0, -3),
-        action      : 'updateAction',
+        action      : 'update',
       }
     }
 
-    if(_.has(controller, 'deleteAction')) {
+    if(_.has(controller, 'delete')) {
       var routeName = _.sprintf('all /%s/delete', path);
 
       routes[routeName] = {
         method      : 'all',
         pattern     : _.sprintf('/%s/delete/:id', path),
         controller  : file.slice(0, -3),
-        action      : 'deleteAction'
+        action      : 'delete'
       }
     }
 
@@ -223,47 +225,47 @@ module.exports = {
     var routes = {};
     var path = file.slice(0, -13).toLowerCase();
 
-    if(_.has(controller, 'findAction')) {
+    if(_.has(controller, 'find')) {
       var routeName = _.sprintf('get /%s', path);
 
       routes[routeName] = {
         method      : 'get',
         pattern     : _.sprintf('/%s/:id?', path),
         controller  : file.slice(0, -3),
-        action      : 'findAction'
+        action      : 'find'
       }
     }
 
-    if(_.has(controller, 'createAction')) {
+    if(_.has(controller, 'create')) {
       var routeName = _.sprintf('post /%s', path);
 
       routes[routeName] = {
         method      : 'post',
         pattern     : _.sprintf('/%s', path),
         controller  : file.slice(0, -3),
-        action      : 'createAction'
+        action      : 'create'
       }
     }
 
-    if(_.has(controller, 'updateAction')) {
+    if(_.has(controller, 'update')) {
       var routeName = _.sprintf('put /%s', path);
 
       routes[routeName] = {
         method      : 'put',
         pattern     : _.sprintf('/%s/:id', path),
         controller  : file.slice(0, -3),
-        action      : 'createAction'
+        action      : 'update'
       }
     }
 
-    if(_.has(controller, 'deleteAction')) {
+    if(_.has(controller, 'delete')) {
       var routeName = _.sprintf('delete /%s', path);
 
       routes[routeName] = {
         method      : 'delete',
         pattern     : _.sprintf('/%s/:id', path),
         controller  : file.slice(0, -3),
-        action      : 'createAction'
+        action      : 'delete'
       }
     }
 
