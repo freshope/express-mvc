@@ -92,6 +92,13 @@ module.exports = {
       }
 
       if(_.isString(route)) {
+        console.log(
+          '%s %s => %s',
+          _.rpad(method.toUpperCase(), 6),
+          _.rpad(pattern, 25),
+          route
+        );
+
         app[method](pattern, function(req, res, next) {
           var path = _.sprintf('%s/%s.%s', app.get('views'), route, app.get('view engine'));
 
@@ -118,8 +125,18 @@ module.exports = {
           route['action'] = action;
         }
 
-        console.log('%s %s ===> %s.%s', route['method'], route['pattern'], route['controller'], route['action']);
-        app[route['method']](route['pattern'], me.controllers[route['controller']][route['action']]);
+        console.log(
+          '%s %s => %s',
+          _.rpad(route['method'].toUpperCase(), 6),
+          _.rpad(route['pattern'], 25),
+          (route['controller'] + '.' + route['action'])
+        );
+        app[route['method']](
+          route['pattern'],
+          function(req, res, next) {
+            me.controllers[route['controller']][route['action']](req, res, next);
+          }
+        );
       }
     });
 
@@ -140,6 +157,7 @@ module.exports = {
         var routeName = _.sprintf('all /%s/%s', path, actionName);
 
         routes[routeName] = {
+          type        : 'action',
           method      : 'all',
           pattern     : _.sprintf('/%s/%s/:id?', path, actionName),
           controller  : file.slice(0, -3),
@@ -150,6 +168,7 @@ module.exports = {
           routeName = _.sprintf('get /%s', path);
 
           routes[routeName] = {
+            type        : 'action',
             method      : 'get',
             pattern     : _.sprintf('/%s', path),
             controller  : file.slice(0, -3),
@@ -170,10 +189,11 @@ module.exports = {
     var routes = {};
     var path = file.slice(0, -13).toLowerCase();
 
-    if(_.has(controller, 'find')) {
+    if(_.isFunction(controller.find)) {
       var routeName = _.sprintf('all /%s/find', path);
 
       routes[routeName] = {
+        type        : 'shotcut',
         method      : 'all',
         pattern     : _.sprintf('/%s/find/:id?', path),
         controller  : file.slice(0, -3),
@@ -181,10 +201,11 @@ module.exports = {
       }
     }
 
-    if(_.has(controller, 'create')) {
+    if(_.isFunction(controller.create)) {
       var routeName = _.sprintf('all /%s/create', path);
 
       routes[routeName] = {
+        type        : 'shotcut',
         method      : 'all',
         pattern     : _.sprintf('/%s/create', path),
         controller  : file.slice(0, -3),
@@ -192,10 +213,11 @@ module.exports = {
       }
     }
 
-    if(_.has(controller, 'update')) {
+    if(_.isFunction(controller.update)) {
       var routeName = _.sprintf('all /%s/update', path);
 
       routes[routeName] = {
+        type        : 'shotcut',
         method      : 'all',
         pattern     : _.sprintf('/%s/update/:id', path),
         controller  : file.slice(0, -3),
@@ -203,10 +225,11 @@ module.exports = {
       }
     }
 
-    if(_.has(controller, 'delete')) {
+    if(_.isFunction(controller.delete)) {
       var routeName = _.sprintf('all /%s/delete', path);
 
       routes[routeName] = {
+        type        : 'shotcut',
         method      : 'all',
         pattern     : _.sprintf('/%s/delete/:id', path),
         controller  : file.slice(0, -3),
@@ -225,10 +248,11 @@ module.exports = {
     var routes = {};
     var path = file.slice(0, -13).toLowerCase();
 
-    if(_.has(controller, 'find')) {
+    if(_.isFunction(controller.find)) {
       var routeName = _.sprintf('get /%s', path);
 
       routes[routeName] = {
+        type        : 'rest',
         method      : 'get',
         pattern     : _.sprintf('/%s/:id?', path),
         controller  : file.slice(0, -3),
@@ -236,10 +260,11 @@ module.exports = {
       }
     }
 
-    if(_.has(controller, 'create')) {
+    if(_.isFunction(controller.create)) {
       var routeName = _.sprintf('post /%s', path);
 
       routes[routeName] = {
+        type        : 'rest',
         method      : 'post',
         pattern     : _.sprintf('/%s', path),
         controller  : file.slice(0, -3),
@@ -247,10 +272,11 @@ module.exports = {
       }
     }
 
-    if(_.has(controller, 'update')) {
+    if(_.isFunction(controller.update)) {
       var routeName = _.sprintf('put /%s', path);
 
       routes[routeName] = {
+        type        : 'rest',
         method      : 'put',
         pattern     : _.sprintf('/%s/:id', path),
         controller  : file.slice(0, -3),
@@ -258,10 +284,11 @@ module.exports = {
       }
     }
 
-    if(_.has(controller, 'delete')) {
+    if(_.isFunction(controller.delete)) {
       var routeName = _.sprintf('delete /%s', path);
 
       routes[routeName] = {
+        type        : 'rest',
         method      : 'delete',
         pattern     : _.sprintf('/%s/:id', path),
         controller  : file.slice(0, -3),
